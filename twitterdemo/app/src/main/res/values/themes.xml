@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Twitterdemo" parent="Theme.Material3.DayNight.NoActionBar">
+         Customize your light theme here.
+         <item name="colorPrimary">@color/blue</item>
+    </style>
+
+    <style name="Theme.Twitterdemo" parent="Base.Theme.Twitterdemo" />
+</resources>
