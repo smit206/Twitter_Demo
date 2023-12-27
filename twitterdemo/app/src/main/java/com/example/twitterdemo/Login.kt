@@ -57,6 +57,7 @@ class Login : AppCompatActivity() {
 
             isReadPermissionGranted = permissions[android.Manifest.permission.READ_EXTERNAL_STORAGE] ?: isReadPermissionGranted
             isReadPermissionGranted = permissions[android.Manifest.permission.READ_MEDIA_IMAGES]?: isReadPermissionGranted
+            isReadPermissionGranted = permissions[android.Manifest.permission.CAMERA]?:isReadPermissionGranted
 
         }
 
