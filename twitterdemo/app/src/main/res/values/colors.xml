@@ -1,22 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="blue">#FF33B5E5</color>
-    <color name="purple">#FFAA66CC</color>
-    <color name="green">#99cc00</color>
-    <color name="orange">#FFFFBB33</color>
-    <color name="red">#FFFF4444</color>
-    <color name="darkblue">#FF0099CC</color>
-    <color name="darkpurple">#FF9933CC</color>
-    <color name="darkgreen">#669900</color>
-    <color name="darkorange">#FFFF8800</color>
-    <color name="darkred">#FFCC0000</color>
-    <color name="customeblue">#3b5998</color>
-    <color name="lowDarkfont">#5D070E07</color>
-    <color name="whiteback">#f9f9f9</color>
-    <color name="whitebackground">#d4d3d3</color>
-</resources>
+fun CheckUserPermission() {
+    if (Build.VERSION.SDK_INT >= 32) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.READ_MEDIA_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (shouldShowRequestPermissionRationale(android.Manifest.permission.READ_MEDIA_AUDIO)) {
+                // Show an explanation to the user and then request the permission
+                AlertDialog.Builder(this)
+                    .setTitle("Permission Needed")
+                    .setMessage("This app needs permission to access audio files for loading songs.")
+                    .setPositiveButton("OK") { _, _ ->
+                        requestPermissions(
+                            arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
+                            REQUEST_CODE_ASK_PERMISSION
+                        )
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
+            } else {
+                // No explanation needed; request the permission
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
+                    REQUEST_CODE_ASK_PERMISSION
+                )
+            }
+        } else {
+            // Permission already granted, load songs immediately
+            LoadSng()
+        }
+    } else {
+        // Handle the case for lower versions of Android (older than Android 12)
+        // Similar logic as above
+    }
+}
+
+// Override this method to handle the result of the permission request
+override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+    when (requestCode) {
+        REQUEST_CODE_ASK_PERMISSION -> {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, load songs immediately
+                LoadSng()
+            } else {
+                // Permission denied, show a message or take appropriate action
+                Toast.makeText(
+                    this,
+                    "Permission denied. Some features may not work.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Check if the user has chosen "Don't ask again"
+                if (!shouldShowRequestPermissionRationale(android.Manifest.permission.READ_MEDIA_AUDIO)) {
+                    // Guide the user to the app settings
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                }
+            }
+        }
+        // Add additional cases for other permissions if needed
+    }
+}
